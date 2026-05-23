@@ -1,25 +1,63 @@
 (function () {
   'use strict';
 
-  /* ── STICKY HEADER ─────────────────────────────────── */
+  /* ── HAMBURGER / MOBILE NAV ────────────────────────── */
+  var navToggle = document.getElementById('navToggle');
+  var mobileNav = document.getElementById('mobileNav');
+
+  function closeMobileNav() {
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.setAttribute('aria-label', 'Open navigation menu');
+    mobileNav.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  navToggle.addEventListener('click', function () {
+    var isOpen = mobileNav.classList.contains('open');
+    if (isOpen) {
+      closeMobileNav();
+    } else {
+      navToggle.setAttribute('aria-expanded', 'true');
+      navToggle.setAttribute('aria-label', 'Close navigation menu');
+      mobileNav.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  });
+
+  mobileNav.querySelectorAll('.mobile-nav-link').forEach(function (link) {
+    link.addEventListener('click', closeMobileNav);
+  });
+
+  document.addEventListener('click', function (e) {
+    if (
+      mobileNav.classList.contains('open') &&
+      !mobileNav.contains(e.target) &&
+      !navToggle.contains(e.target)
+    ) {
+      closeMobileNav();
+    }
+  });
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 768) closeMobileNav();
+  }, { passive: true });
+
+  /* ── STICKY HEADER + BACK-TO-TOP + SCROLL CUE ─────── */
   var header    = document.getElementById('siteHeader');
   var scrollCue = document.getElementById('scrollCue');
+  var backToTop = document.getElementById('backToTop');
   var heroH     = window.innerHeight;
+
+  backToTop.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   function onScroll() {
     var y = window.scrollY;
-
-    if (y > heroH * 0.25) {
-      header.classList.add('revealed', 'opaque');
-    } else {
-      header.classList.remove('revealed', 'opaque');
-    }
-
-    if (y > 60) {
-      scrollCue.classList.add('hidden');
-    } else {
-      scrollCue.classList.remove('hidden');
-    }
+    backToTop.classList.toggle('visible', y > 400);
+    header.classList.toggle('revealed', y > heroH * 0.25);
+    header.classList.toggle('opaque', y > heroH * 0.25);
+    scrollCue.classList.toggle('hidden', y > 60);
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
