@@ -1,44 +1,62 @@
-// Nav scroll effect
-const nav = document.getElementById('nav');
-const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 20);
-window.addEventListener('scroll', onScroll, { passive: true });
-onScroll();
+(function () {
+  'use strict';
 
-// Mobile menu
-const burger = document.getElementById('burger');
-const navLinks = document.querySelector('.nav__links');
-burger.addEventListener('click', () => {
-  const open = navLinks.classList.toggle('open');
-  burger.setAttribute('aria-expanded', open);
-  document.body.style.overflow = open ? 'hidden' : '';
-});
-navLinks.querySelectorAll('a').forEach(a =>
-  a.addEventListener('click', () => {
-    navLinks.classList.remove('open');
-    burger.setAttribute('aria-expanded', false);
-    document.body.style.overflow = '';
-  })
-);
+  /* ── STICKY HEADER ─────────────────────────────────── */
+  var header    = document.getElementById('siteHeader');
+  var scrollCue = document.getElementById('scrollCue');
+  var heroH     = window.innerHeight;
 
-// Footer year
-document.getElementById('year').textContent = new Date().getFullYear();
+  function onScroll() {
+    var y = window.scrollY;
 
-// Join form — basic client-side feedback (swap with real backend/Formspree/etc.)
-const form = document.getElementById('join-form');
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const btn = form.querySelector('button[type="submit"]');
-  const name = form.name.value.trim();
-  const email = form.email.value.trim();
-  if (!name || !email) return;
-  btn.textContent = 'Sending…';
-  btn.disabled = true;
-  // Simulate async — replace with fetch() to your endpoint
-  setTimeout(() => {
-    form.innerHTML = `
-      <p style="text-align:center;padding:2rem;color:var(--color-accent);font-family:var(--font-serif);font-size:1.2rem;">
-        Thanks, ${name}!<br>
-        <span style="font-size:0.95rem;color:var(--color-muted);font-family:var(--font-sans)">We'll be in touch at ${email} within 48 hours.</span>
-      </p>`;
-  }, 800);
-});
+    if (y > heroH * 0.25) {
+      header.classList.add('revealed', 'opaque');
+    } else {
+      header.classList.remove('revealed', 'opaque');
+    }
+
+    if (y > 60) {
+      scrollCue.classList.add('hidden');
+    } else {
+      scrollCue.classList.remove('hidden');
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', function () {
+    heroH = document.getElementById('hero').offsetHeight;
+  }, { passive: true });
+
+  /* ── SCROLL FADE-IN ────────────────────────────────── */
+  var fadeEls = document.querySelectorAll('.fi');
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: '0px 0px -30px 0px'
+    });
+
+    fadeEls.forEach(function (el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* ── SMOOTH ANCHOR NAV ─────────────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        var top = target.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+  });
+}());
