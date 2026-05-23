@@ -16,7 +16,7 @@ a { color: inherit; }
   --accent-dim:  rgba(212,160,23,.08);
   --border:      #242424;
   --border-mid:  #1E1E1E;
-  --serif:       'Playfair Display', Georgia, serif;
+  --serif:       'DM Sans', system-ui, sans-serif;
   --sans:        'DM Sans', system-ui, sans-serif;
   --max-w:       1120px;
   --pad-x:       clamp(20px, 6vw, 80px);
