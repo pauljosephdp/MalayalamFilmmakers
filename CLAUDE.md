@@ -14,3 +14,4 @@
 - Report results, not step narration.
 - IMPORTANT: run [your typecheck/lint/test command] after a series of edits.
 - Keep this file short; project-specific rules belong in each project's CLAUDE.md.
+- Every change must be pushed directly, merged to main, and the branch deleted after merging.
